@@ -23,8 +23,23 @@ class RS < Thor
   end
 
   desc "batch", "migrate all known gitlab projects to bitbucket"
+  method_options %w( concurrency -c ) => 1
   def batch
-    gitlab_api.projects(per_page: 500).each { |p| repo(p.name).migrate }
+    c = options[:concurrency]
+    project_names = gitlab_api.projects(per_page: 500).map(&:name)
+
+    queue = Queue.new
+    project_names.each { |name| queue << name }
+    threads = c.times.map do
+      Thread.new do
+        until queue.empty?
+          name = queue.pop(true) rescue nil
+          repo(name).migrate
+        end
+      end
+    end
+
+    threads.each(&:join)
   end
 
   desc "console", "run a console in this context"
