@@ -13,7 +13,7 @@ module Reposlanger
         api.repos.all.map(&:name)
       end
 
-      def do_push(path = :git)
+      def do_push
         unless remote_exists?
           params = metadata_to_attributes
           params[:name] = name
@@ -58,7 +58,7 @@ module Reposlanger
       end
 
       def attributes_to_metadata
-        repo_attributes = api.repos.get(api.user, name)
+        repo_attributes = api.repos.get(api.user, name.downcase)
 
         METADATA_MAP.each_with_object({}) do |kv, h|
           h[kv[1].to_s] = repo_attributes[kv[0]]
@@ -68,7 +68,7 @@ module Reposlanger
       def remote_exists?
         begin
           # could memoize this, but would need to be careful to expire
-          api.repos.get(api.user, name) && true
+          api.repos.get(api.user, name.downcase) && true
         rescue BitBucket::Error::NotFound
           puts "Bitbucket repo #{name} does not exist"
           false

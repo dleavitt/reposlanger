@@ -13,7 +13,7 @@ module Reposlanger
         api.projects(per_page: 500).map(&:name)
       end
 
-      def do_push(path = :git)
+      def do_push
         unless remote_exists?
           api.create_project(name, metadata_to_attributes)
         end

@@ -1,5 +1,5 @@
 module Reposlanger
-  class CLI
+  class Commander
     attr_reader :dirs, :repo_name, :provider_name
     # TODO: logging
 
@@ -47,7 +47,7 @@ module Reposlanger
     def remote_branches
       run("git branch -r").split("\n")
         .map    { |r| r.chomp.gsub(/^\s+/, "") }
-        .select { |r| r[provider_name] && ! r["HEAD"] && ! r["master"] }
+        .select { |r| r[provider_name] && ! r["HEAD"] }
         .map    { |r| r.gsub("#{provider_name}/", "") }
     end
   end

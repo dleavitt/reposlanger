@@ -15,7 +15,7 @@ module Reposlanger
         api.list(options)
       end
 
-      def do_push(path = :git)
+      def do_push
         api.create(name, metadata_to_attributes) unless remote_exists?
         super
       end

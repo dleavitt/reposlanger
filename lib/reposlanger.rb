@@ -1,7 +1,7 @@
 module Reposlanger
 
   require File.join(File.dirname(__FILE__), "reposlanger", "provider")
-  require File.join(File.dirname(__FILE__), "reposlanger", "cli")
+  require File.join(File.dirname(__FILE__), "reposlanger", "commander")
 
   def self.providers
     @@providers ||= {}

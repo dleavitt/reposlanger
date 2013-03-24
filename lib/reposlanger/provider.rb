@@ -42,7 +42,7 @@ module Reposlanger
     def initialize(name_or_repo, options = {})
       # allow either a string or another repo to be passed
       @name = name_or_repo.respond_to?(:name) ? name_or_repo.name : name_or_repo
-      @cli = Reposlanger::CLI.new(name, provider_name)
+      @cli = Reposlanger::Commander.new(name, provider_name)
       @options = self.class.defaults.merge(options)
     end
 
@@ -54,9 +54,9 @@ module Reposlanger
     end
 
     # Usually this will be the path of a repo from a different provider
-    def push(path = :git)
+    def push
       read_metadata
-      do_push(path)
+      do_push
     end
 
     # Removes the local repo
@@ -117,7 +117,7 @@ module Reposlanger
       end
     end
 
-    def do_push(path = :git)
+    def do_push
       cmd "git remote add #{provider_name} #{clone_url}"
       cmd "git push --all #{provider_name}"
     end
