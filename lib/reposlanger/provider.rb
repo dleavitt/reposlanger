@@ -1,4 +1,5 @@
 require 'reposlanger'
+require 'json'
 
 module Reposlanger
   module Provider
@@ -44,6 +45,7 @@ module Reposlanger
       log "--> Cloning repo #{name}"
       @cli.create
       do_pull
+      write_metadata
     end
 
     # Usually this will be the path of a repo from a different provider
@@ -70,6 +72,22 @@ module Reposlanger
       self.class.provider_name
     end
 
+    def api
+      @api ||= self.class.api(options)
+    end
+
+    def metadata
+      begin
+        JSON.parse(cmd "git notes show")
+      rescue JSON::ParserError
+        {}
+      end
+    end
+
+    def write_metadata
+      cmd "git notes add -f -m #{JSON.dump(metadata)}"
+    end
+
     # Methods to override
 
     # TODO: make this a lambda
@@ -89,6 +107,10 @@ module Reposlanger
     def do_push(path = :git)
       cmd "git remote add #{provider_name} #{clone_url}"
       cmd "git push --all #{provider_name}"
+    end
+
+    def retrieve_metadata
+      {}
     end
 
   end

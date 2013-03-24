@@ -13,8 +13,8 @@ module Reposlanger
       @dirs = {
         :base       => base_path,
         :provider   => provider_path,
-        :git        => File.join(provider_path, "git", repo_name),
-        :scratch    => File.join(provider_path, "scratch", repo_name)
+        :git        => File.join(base_path, "git", repo_name),
+        :scratch    => File.join(base_path, "scratch", provider_path, repo_name)
       }
     end
 
@@ -27,7 +27,7 @@ module Reposlanger
     # TODO: both "puts" line and backticks should respect logging settings
     def run(command, key = :git)
       puts command
-      `cd #{path_for(key)} && #{command}`
+      `cd #{path_for(key)} && #{command}`.chomp
     end
 
     def create(key = :git)

@@ -5,13 +5,12 @@ module Reposlanger
     class Gitlabhq
       include Reposlanger::Provider
 
-      def do_push(path = :git)
-        raise "not implemented"
+      def self.api(options = {})
+        Gitlab.client(options)
       end
 
-      def api
-        p options
-        @api ||= Gitlab.client(options)
+      def do_push(path = :git)
+        
       end
 
       def clone_url

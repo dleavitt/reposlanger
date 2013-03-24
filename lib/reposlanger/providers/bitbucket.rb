@@ -5,6 +5,10 @@ module Reposlanger
     class Bitbucket
       include Reposlanger::Provider
 
+      def self.api(options = {})
+        BitBucket.new(defaults.merge(options))
+      end
+
       def do_push(path = :git)
         unless remote_exists?
           api.repos.create :name             => name,
@@ -13,12 +17,8 @@ module Reposlanger
                            :has_issues       => false,
                            :has_wiki         => false,
                            :no_public_forks  => true
-          end
+        end
         super
-      end
-
-      def api
-        @api ||= BitBucket.new(options)
       end
 
       def clone_url
@@ -32,6 +32,10 @@ module Reposlanger
           puts "Bitbucket repo #{name} exists"
           false
         end
+      end
+
+      def retrieve_metadata
+        api.repos.get(api.user, name)
       end
     end
 
