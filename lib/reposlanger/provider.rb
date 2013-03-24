@@ -23,7 +23,11 @@ module Reposlanger
         self.name.underscore.split("/")[-1]
       end
 
-      # Override this with custom logic to
+      def api(options = {})
+        nil
+      end
+
+      # Override this with custom logic to get a list of all repos
       def repos
         raise "not implemented"
       end
@@ -33,7 +37,7 @@ module Reposlanger
     #   - description
     #   - privacy
 
-    attr_accessor :name, :options, :cli
+    attr_accessor :name, :options, :cli, :metadata
 
     def initialize(name, options = {})
       @name = name
@@ -50,6 +54,7 @@ module Reposlanger
 
     # Usually this will be the path of a repo from a different provider
     def push(path = :git)
+      read_metadata
       do_push(path)
     end
 
@@ -76,16 +81,23 @@ module Reposlanger
       @api ||= self.class.api(options)
     end
 
-    def metadata
-      begin
+    # use git notes storage for metadata
+    # probably not optimal, but hey, it's right there
+
+    def read_metadata
+      self.metadata = begin
         JSON.parse(cmd "git notes show")
       rescue JSON::ParserError
-        {}
+        nil
       end
     end
 
     def write_metadata
-      cmd "git notes add -f -m #{JSON.dump(metadata)}"
+      cmd "git notes add -f -m '#{JSON.dump(metadata)}'" if metadata
+    end
+
+    def update_metadata(hsh)
+
     end
 
     # Methods to override
@@ -108,10 +120,5 @@ module Reposlanger
       cmd "git remote add #{provider_name} #{clone_url}"
       cmd "git push --all #{provider_name}"
     end
-
-    def retrieve_metadata
-      {}
-    end
-
   end
 end

@@ -1,5 +1,5 @@
 require "helper"
-
-describe Reposlanger::Provider do
   
+describe Reposlanger::Provider do
+
 end

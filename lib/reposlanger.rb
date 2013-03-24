@@ -23,6 +23,8 @@ module Reposlanger
   end
 end
 
+# TOOD: is this idiomatic? Where's the best place to put this?
+
 unless String.new.respond_to? :underscore
   class String
     def underscore
@@ -36,4 +38,3 @@ unless String.new.respond_to? :underscore
     end
   end
 end
-

@@ -7,14 +7,13 @@ module Reposlanger
       @repo_name      = repo_name
       @provider_name  = provider_name
 
+      # TODO: this should be injectable
       base_path = Reposlanger.data_path
-      provider_path = File.join(Reposlanger.data_path, provider_name)
 
       @dirs = {
         :base       => base_path,
-        :provider   => provider_path,
         :git        => File.join(base_path, "git", repo_name),
-        :scratch    => File.join(base_path, "scratch", provider_path, repo_name)
+        :scratch    => File.join(base_path, provider_name, "scratch", repo_name)
       }
     end
 

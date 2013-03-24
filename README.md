@@ -12,4 +12,5 @@ A tool for dealing with repos spread among multiple services. The idea is to pro
 - actually implement batch and other things that would make this useful
 - make it a standalone executable that creates a working directory for you
 - add beanstalk (svn and git), github, finish gitlabhq
+- some way to make it so you can rename the repo when transferring
 - refactor. be always refactoring.
