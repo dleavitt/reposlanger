@@ -10,9 +10,17 @@ module Reposlanger
           @api = ::Github::Repos.new(options)
         end
 
-        def list
-          options = { per_page: 500 }
-          options[:org] = org if org
+        def list(opts = {})
+          options = { :per_page => 500 }.merge(opts)
+
+          # if no org specified for api
+          # or if org specified in options but explicitly set to nil
+          if ! @org || (opts.has_key?(:org) && ! opts[:org])
+            options[:user] = @user
+          else
+            options[:org] = @org
+          end
+
           api.list(options).map(&:name)
         end
 

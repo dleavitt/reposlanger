@@ -9,6 +9,10 @@ module Reposlanger
         BitBucket.new(defaults.merge(options))
       end
 
+      def self.repos(options = {})
+        api.repos.all.map(&:name)
+      end
+
       def do_push(path = :git)
         unless remote_exists?
           params = metadata_to_attributes

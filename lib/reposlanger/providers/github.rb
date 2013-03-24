@@ -8,7 +8,11 @@ module Reposlanger
       include Reposlanger::Provider
 
       def self.api(options = {})
-        API.new(options)
+        API.new(@defaults.merge(options))
+      end
+
+      def self.repos(options = {})
+        api.list(options)
       end
 
       def do_push(path = :git)

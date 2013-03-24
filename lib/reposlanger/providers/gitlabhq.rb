@@ -6,7 +6,11 @@ module Reposlanger
       include Reposlanger::Provider
 
       def self.api(options = {})
-        Gitlab.client(options)
+        Gitlab.client(options.merge(defaults))
+      end
+
+      def self.repos(options = {})
+        api.projects(per_page: 500).map(&:name)
       end
 
       def do_push(path = :git)
