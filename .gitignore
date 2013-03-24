@@ -8,4 +8,4 @@ git/*
 db/*
 /config.yml
 .ruby-version
-repos/*
+data/*
