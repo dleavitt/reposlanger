@@ -42,8 +42,10 @@ class RS < Thor
     def env
       require "./lib/reposlanger/providers/gitlabhq"
       require "./lib/reposlanger/providers/bitbucket"
+      require "./lib/reposlanger/providers/github"
       Reposlanger.configure("gitlabhq", settings["gitlabhq"])
       Reposlanger.configure("bitbucket", settings["bitbucket"])
+      Reposlanger.configure("github", settings["github"])
     end
 
     def settings

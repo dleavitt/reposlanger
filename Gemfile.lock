@@ -10,39 +10,42 @@ GEM
       simple_oauth
     coderay (1.0.9)
     diff-lcs (1.2.1)
-    domain_name (0.5.8)
-      unf (~> 0.0.3)
     faraday (0.8.6)
       multipart-post (~> 1.1)
     faraday_middleware (0.8.8)
       faraday (>= 0.7.4, < 0.9)
+    github_api (0.9.0)
+      faraday (~> 0.8.1)
+      hashie (~> 1.2.0)
+      multi_json (~> 1.4)
+      nokogiri (~> 1.5.2)
+      oauth2
     gitlab (2.2.0)
       httparty
     hashie (1.2.0)
     httparty (0.10.2)
       multi_json (~> 1.0)
       multi_xml (>= 0.5.2)
-    mechanize (2.5.1)
-      domain_name (~> 0.5, >= 0.5.1)
-      mime-types (~> 1.17, >= 1.17.2)
-      net-http-digest_auth (~> 1.1, >= 1.1.1)
-      net-http-persistent (~> 2.5, >= 2.5.2)
-      nokogiri (~> 1.4)
-      ntlm-http (~> 0.1, >= 0.1.1)
-      webrobots (~> 0.0, >= 0.0.9)
+    httpauth (0.2.0)
+    jwt (0.1.8)
+      multi_json (>= 1.5)
     method_source (0.8.1)
-    mime-types (1.21)
     multi_json (1.7.0)
     multi_xml (0.5.3)
     multipart-post (1.2.0)
-    net-http-digest_auth (1.2.1)
-    net-http-persistent (2.8)
     nokogiri (1.5.6)
-    ntlm-http (0.1.1)
+    oauth2 (0.9.1)
+      faraday (~> 0.8)
+      httpauth (~> 0.1)
+      jwt (~> 0.1.4)
+      multi_json (~> 1.0)
+      multi_xml (~> 0.5)
+      rack (~> 1.2)
     pry (0.9.12)
       coderay (~> 1.0.5)
       method_source (~> 0.8)
       slop (~> 3.4)
+    rack (1.5.2)
     rspec (2.13.0)
       rspec-core (~> 2.13.0)
       rspec-expectations (~> 2.13.0)
@@ -54,20 +57,14 @@ GEM
     simple_oauth (0.2.0)
     slop (3.4.4)
     thor (0.17.0)
-    unf (0.0.5)
-      unf_ext
-    unf_ext (0.0.6)
-    webrobots (0.1.1)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
   bitbucket_rest_api
+  github_api
   gitlab
-  hashie
-  httparty
-  mechanize
   pry
   rspec
   thor

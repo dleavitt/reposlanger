@@ -39,8 +39,9 @@ module Reposlanger
 
     attr_accessor :name, :options, :cli, :metadata
 
-    def initialize(name, options = {})
-      @name = name
+    def initialize(name_or_repo, options = {})
+      # allow either a string or another repo to be passed
+      @name = name_or_repo.respond_to?(:name) ? name_or_repo.name : name_or_repo
       @cli = Reposlanger::CLI.new(name, provider_name)
       @options = self.class.defaults.merge(options)
     end

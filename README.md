@@ -13,4 +13,8 @@ A tool for dealing with repos spread among multiple services. The idea is to pro
 - make it a standalone executable that creates a working directory for you
 - add beanstalk (svn and git), github, finish gitlabhq
 - some way to make it so you can rename the repo when transferring
+- autoloader
+- work on having multiple repos from one provider
+- allow the name to be different on the target vs. the source
+- manually override metadata
 - refactor. be always refactoring.
