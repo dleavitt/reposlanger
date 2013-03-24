@@ -1,0 +1,11 @@
+*.gem
+*.rbc
+.bundle
+.config
+tmp
+svn/*
+git/*
+db/*
+/config.yml
+.ruby-version
+repos/*
