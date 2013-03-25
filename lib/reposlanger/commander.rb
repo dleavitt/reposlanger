@@ -3,9 +3,8 @@ module Reposlanger
     attr_reader :dirs, :repo_name, :provider_name
     # TODO: logging
 
-    def initialize(repo_name, provider_name)
+    def initialize(repo_name)
       @repo_name      = repo_name
-      @provider_name  = provider_name
 
       # TODO: this should be injectable
       base_path = Reposlanger.data_path
@@ -13,7 +12,6 @@ module Reposlanger
       @dirs = {
         :base       => base_path,
         :git        => File.join(base_path, "git", repo_name),
-        :scratch    => File.join(base_path, provider_name, "scratch", repo_name)
       }
     end
 
@@ -29,13 +27,20 @@ module Reposlanger
       `cd #{path_for(key)} && #{command}`.chomp
     end
 
-    def create(key = :git)
+    def create_dir(key = :git)
       FileUtils.mkdir_p(path_for(key))
     end
 
-    def destroy
-      run "rm -rf #{dirs[:git]}/../#{@repo_name}"
-      run "rm -rf #{dirs[:scratch]}/../#{@repo_name}"
+    def write_metadata(metadata)
+      run "git notes add -f -m '#{JSON.dump(metadata)}'"
+    end
+
+    def read_metadata
+      begin
+        JSON.parse(run "git notes show")
+      rescue JSON::ParserError
+        nil
+      end
     end
 
     def path_for(key)
@@ -44,11 +49,11 @@ module Reposlanger
 
     # returns a list of branch names for the remote
     # will this handle edge cases?
-    def remote_branches
+    def remote_branches(remote)
       run("git branch -r").split("\n")
         .map    { |r| r.chomp.gsub(/^\s+/, "") }
-        .select { |r| r[provider_name] && ! r["HEAD"] }
-        .map    { |r| r.gsub("#{provider_name}/", "") }
+        .select { |r| r[remote] && ! r["HEAD"] }
+        .map    { |r| r.gsub("#{remote}/", "") }
     end
   end
 end

@@ -14,12 +14,8 @@ module Reposlanger
     File.expand_path File.join File.dirname(__FILE__), "..", "data"
   end
 
-  def self.new_repo(provider_name, repo_name, options = {})
-    @@providers[provider_name.to_s].new(repo_name, options)
-  end
-
-  def self.configure(provider_name, options)
-    @@providers[provider_name.to_s].configure(options)
+  def self.new_provider(name, options = {})
+    @@providers[options["provider"].to_s].new(name, options)
   end
 end
 
@@ -35,6 +31,14 @@ unless String.new.respond_to? :underscore
       word.tr!("-", "_")
       word.downcase!
       word
+    end
+  end
+end
+
+unless Hash.new.respond_to? :symbolize_keys
+  class Hash
+    def symbolize_keys
+      self.each_with_object({}){ |(k, v), h| h[k.to_sym] = v }
     end
   end
 end

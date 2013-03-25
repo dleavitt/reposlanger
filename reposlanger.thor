@@ -1,48 +1,27 @@
 require "rubygems"
 require "bundler"
-require "yaml"
 require "thread"
 Bundler.require
 
 # hackey, remove
-LIBS = Dir["./lib/**/*.rb"]
-
+$:.unshift File.expand_path("../lib", __FILE__)
 # LIBS.each(&method(:require))
-require "./lib/reposlanger"
+require "reposlanger"
 
 class RS < Thor
 
-  # desc "batch", "migrate all known gitlab projects to bitbucket"
-  # method_options %w( concurrency -c ) => 1
-  # def batch
-  #   c = options[:concurrency]
-  #   project_names = gitlab_api.projects(per_page: 500).map(&:name)
-
-  #   queue = Queue.new
-  #   project_names.each { |name| queue << name }
-  #   threads = c.times.map do
-  #     Thread.new do
-  #       until queue.empty?
-  #         name = queue.pop(true) rescue nil
-  #         repo(name).migrate
-  #       end
-  #     end
-  #   end
-
-  #   threads.each(&:join)
-  # end
-
-  desc "copy SOURCE TARGET REPO_NAME", "copy a repo from one provider to another"
-  def copy(source_provider, target_provider, repo_name)
+  desc "copy SOURCE TARGET REPO_NAME", "copy a repo from one remote to another"
+  def copy(source_remote_name, target_remote_name, repo_name)
     env
 
-    source = Reposlanger.new_repo(source_provider, repo_name)
-    target = Reposlanger.new_repo(target_provider, repo_name)
+    repo = Reposlanger::Repo.new repo_name,
+                                 :source => new_provider(source_remote_name),
+                                 :target => new_provider(target_remote_name)
 
-    source.pull
-    target.push
+    repo.copy
   end
 
+  # TODO: update to new style
   desc "copy_batch SOURCE TARGET", "copy all repos from one provider to another"
   method_option :concurrency, default: 1, aliases: "-c", type: :numeric
   method_option :include, default: nil, aliases: "-i", type: :array
@@ -74,34 +53,49 @@ class RS < Thor
     threads.each(&:join)
   end
 
-  desc "list SERVICE", "list all repos for a service"
-  def list(provider)
+  desc "remotes", "list all remotes"
+  def remotes
+    settings.keys.each(&method(:puts))
+  end
+
+  desc "repos PROVIDER", "list all repos for a provider"
+  def repos(provider)
     env
-    Reposlanger.providers[provider].repos.each { |r| puts r }
+    new_provider(provider).repos.each { |r| puts r }
+  end
+
+  desc "rm REPO", "delete a local repo"
+  def rm(repo_name)
+    env
+    repo = Reposlanger::Repo.new(repo_name)
+    repo.rm { |path| yes?("Really delete #{repo_name} at '#{path}'?") }
   end
 
   desc "console", "run a console in this context"
   def console
     env
-    binding.pry
   end
 
   no_tasks do
     def env
-      require "./lib/reposlanger/providers/gitlabhq"
-      require "./lib/reposlanger/providers/bitbucket"
-      require "./lib/reposlanger/providers/github"
-      Reposlanger.configure("gitlabhq", settings["gitlabhq"])
-      Reposlanger.configure("bitbucket", settings["bitbucket"])
-      Reposlanger.configure("github", settings["github"])
+      require "reposlanger/repo"
+      require "reposlanger/providers/gitlabhq"
+      require "reposlanger/providers/bitbucket"
+      require "reposlanger/providers/github"
+    end
+
+    def new_provider(remote_name)
+      raise "Remote #{remote_name} does not exist" unless settings[remote_name]
+      Reposlanger.new_provider(remote_name, settings[remote_name])
+
     end
 
     def settings
-      @settings ||= YAML.load_file('config.yml')
+      @settings ||= TOML.load_file('config.toml')
     end
 
     def reload!
-      LIBS.each(&method(:load))
+      Dir["./lib/**/*.rb"].each(&method(:load))
       env
     end
   end

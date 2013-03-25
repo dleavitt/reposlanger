@@ -7,5 +7,6 @@ svn/*
 git/*
 db/*
 /config.yml
+/config.toml
 .ruby-version
 data/*

@@ -4,30 +4,19 @@ require 'reposlanger/providers/github/api'
 module Reposlanger
   module Providers
     class Github
-
       include Reposlanger::Provider
 
       def self.api(options = {})
-        API.new(@defaults.merge(options))
+        API.new(options)
       end
 
-      def self.repos(options = {})
+      def repos(options = {})
         api.list(options)
       end
 
-      def do_push
-        api.create(name, metadata_to_attributes) unless remote_exists?
-        super
-      end
-
-      def do_pull
-        self.metadata = attributes_to_metadata
-        super
-      end
-
       # TODO: might have to break this into pull and push urls
-      def clone_url
-        api.get(name).ssh_url rescue nil
+      def clone_url(repo)
+        api.get(repo.name).ssh_url
       end
 
       # additional utility methods
@@ -41,27 +30,31 @@ module Reposlanger
         :website     => :homepage,
       }
 
-      def metadata_to_attributes
-        return {} unless metadata
-
-        METADATA_MAP.each_with_object({}) do |kv, h|
-          if val = metadata[kv[1].to_s]
-            h[kv[0].to_sym] = val
+      def create_remote(repo)
+        if repo.metadata
+          params = METADATA_MAP.each_with_object({}) do |(key, value), h|
+            if val = repo.metadata[value.to_s]
+              h[key.to_sym] = val
+            end
           end
+        else
+          params = {}
+        end
+
+        api.create(repo.name, params) unless remote_exists?(repo)
+      end
+
+      def retrieve_metadata(repo)
+        proj = api.get(repo.name)
+
+        METADATA_MAP.each_with_object({}) do |(key, value), h|
+          h[value.to_s] = proj[key]
         end
       end
 
-      def attributes_to_metadata
-        proj = api.get(name)
-
-        METADATA_MAP.each_with_object({}) do |kv, h|
-          h[kv[1].to_s] = proj[kv[0]]
-        end
-      end
-
-      def remote_exists?
+      def remote_exists?(repo)
         begin
-          api.get(name) && true
+          api.get(repo.name) && true
         rescue ::Github::Error::NotFound
           false
         end

@@ -26,6 +26,7 @@ A tool for dealing with repos spread among multiple services. The idea is to pro
 - refactor so you can have more than one service per provider
 - task to list providers
 - decouple API clients from providers
+- figure out my damn terminology (provider, service, repo)
 - refactor. be always refactoring.
 
 ### Bugs
