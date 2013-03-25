@@ -6,27 +6,19 @@ module Reposlanger
       include Reposlanger::Provider
 
       def self.api(options = {})
-        Gitlab.client(options.merge(defaults))
+        Gitlab.client(options)
       end
 
-      def self.repos(options = {})
-        api.projects(per_page: 500).map(&:name)
+      def repos(options = {})
+        api.projects(options.merge({per_page: 500})).map(&:name)
       end
 
-      def do_push
-        unless remote_exists?
-          api.create_project(name, metadata_to_attributes)
-        end
-
-        super
-      end
-
-      def clone_url
-        "git@#{URI.parse(api.endpoint).host}:#{name}.git"
+      def clone_url(repo)
+        "git@#{URI.parse(api.endpoint).host}:#{repo.name}.git"
       end
 
       # additional utility methods
-      METADATA_MAP =         {
+      METADATA_MAP = {
         :wiki_enabled     => :wiki,
         :issues_enabled   => :issues,
         :description      => :description,
@@ -34,27 +26,31 @@ module Reposlanger
         :default_branch   => :default_branch,
       }
 
-      def metadata_to_attributes
-        return {} unless metadata
-
-        METADATA_MAP.each_with_object({}) do |kv, h|
-          if val = metadata[kv[1].to_s]
-            h[kv[0].to_sym] = val
+      def create_remote(repo)
+        params = if repo.metadata
+          METADATA_MAP.each_with_object({}) do |(key, value), h|
+            if val = repo.metadata[value.to_s]
+              h[key.to_sym] = val
+            end
           end
+        else
+          {}
+        end
+
+        api.create_project(repo.name, params) unless remote_exists?(repo)
+      end
+
+      def retrieve_metadata(repo)
+        proj = api.project(repo.name)
+
+        METADATA_MAP.each_with_object({}) do |(key, value), h|
+          h[value.to_s] = proj.send(key)
         end
       end
 
-      def attributes_to_metadata
-        proj = api.project(name)
-
-        METADATA_MAP.each_with_object({}) do |kv, h|
-          h[kv[1].to_s] = proj.send([kv[0]])
-        end
-      end
-
-      def remote_exists?
+      def remote_exists?(repo)
         begin
-          api.project(name) && true
+          api.project(repo.name) && true
         rescue Gitlab::Error::NotFound
           false
         end

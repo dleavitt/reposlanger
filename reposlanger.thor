@@ -10,41 +10,42 @@ require "reposlanger"
 
 class RS < Thor
 
-  desc "copy SOURCE TARGET REPO_NAME", "copy a repo from one remote to another"
-  def copy(source_remote_name, target_remote_name, repo_name)
+  desc "mirror SOURCE TARGET REPO_NAME", "copy a repo from one remote to another"
+  def mirror(source_remote_name, target_remote_name, repo_name)
     env
-
     repo = Reposlanger::Repo.new repo_name,
                                  :source => new_provider(source_remote_name),
                                  :target => new_provider(target_remote_name)
 
-    repo.copy
+    repo.mirror
   end
 
   # TODO: update to new style
-  desc "copy_batch SOURCE TARGET", "copy all repos from one provider to another"
-  method_option :concurrency, default: 1, aliases: "-c", type: :numeric
-  method_option :include, default: nil, aliases: "-i", type: :array
-  method_option :exclude, default: nil, aliases: "-e", type: :array
-  def copy_batch(source_provider, target_provider)
+  desc "mirror_batch SOURCE TARGET", "copy all repos from one provider to another"
+  method_option :concurrency, default: 1,   aliases: "-c", type: :numeric
+  method_option :include,     default: nil, aliases: "-i", type: :array
+  method_option :exclude,     default: nil, aliases: "-e", type: :array
+  def mirror_batch(source_remote_name, target_remote_name)
     env
-    repos = Reposlanger.providers[source_provider].repos
-    repos &= options[:include] if options[:include]
-    repos -= options[:exclude] if options[:exclude]
+
+    repo_names = new_provider(source_remote_name).repos
+    repo_names &= options[:include] if options[:include]
+    repo_names -= options[:exclude] if options[:exclude]
 
     c = options[:concurrency]
     queue = Queue.new
 
-    repos.each { |repo_name| queue << repo_name }
+    repo_names.each { |repo_name| queue << repo_name }
     threads = c.times.map do
       Thread.new do
         until queue.empty?
-          repo_name = queue.pop(true) rescue nil
-          if repo_name
-            source = Reposlanger.new_repo(source_provider, repo_name)
-            target = Reposlanger.new_repo(target_provider, repo_name)
-            source.pull
-            target.push
+          if repo_name = queue.pop(true) rescue nil
+            repo = Reposlanger::Repo.new(repo_name, {
+              :source => new_provider(source_remote_name),
+              :target => new_provider(target_remote_name),
+            })
+
+            repo.mirror
           end
         end
       end

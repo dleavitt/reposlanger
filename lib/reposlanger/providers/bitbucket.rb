@@ -59,7 +59,6 @@ module Reposlanger
           # could memoize this, but would need to be careful to expire
           api.repos.get(api.user, repo.name.downcase) && true
         rescue BitBucket::Error::NotFound
-          puts "Bitbucket repo #{name} does not exist"
           false
         end
       end

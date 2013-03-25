@@ -18,7 +18,6 @@ module Reposlanger
           unless ! org || (opts.has_key?(:org) && ! opts[:org])
             options[:org] = @org
           end
-          binding.pry
           api.list(options).map(&:name)
         end
 

@@ -9,7 +9,7 @@ module Reposlanger
       @commander = Reposlanger::Commander.new(name)
     end
 
-    def copy
+    def mirror
       pull
       push
     end

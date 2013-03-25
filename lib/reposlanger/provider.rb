@@ -21,7 +21,6 @@ module Reposlanger
     attr_accessor :name, :options
 
     def initialize(name, options = {})
-      # allow either a string or another repo to be passed
       @name = name
       @options = options.symbolize_keys
       @options.delete :provider
@@ -36,9 +35,6 @@ module Reposlanger
       after_pull(repo)
     end
 
-    def before_pull(repo); end
-    def after_pull(repo); end
-
     # Usually this will be the path of a repo from a different provider
     def push(repo)
       before_push(repo)
@@ -48,11 +44,13 @@ module Reposlanger
       after_push(repo)
     end
 
+    def before_pull(repo); end
+    def after_pull(repo); end
+
     def before_push(repo); end
     def after_push(repo); end
 
     def retrieve_metadata(repo); end
-
     def create_remote(repo); end
 
     def repos
