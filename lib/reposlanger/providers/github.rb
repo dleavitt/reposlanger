@@ -31,14 +31,14 @@ module Reposlanger
       }
 
       def create_remote(repo)
-        if repo.metadata
-          params = METADATA_MAP.each_with_object({}) do |(key, value), h|
+        params = if repo.metadata
+          METADATA_MAP.each_with_object({}) do |(key, value), h|
             if val = repo.metadata[value.to_s]
               h[key.to_sym] = val
             end
           end
         else
-          params = {}
+          {}
         end
 
         api.create(repo.name, params) unless remote_exists?(repo)
@@ -46,7 +46,7 @@ module Reposlanger
 
       def retrieve_metadata(repo)
         proj = api.get(repo.name)
-
+        
         METADATA_MAP.each_with_object({}) do |(key, value), h|
           h[value.to_s] = proj[key]
         end
