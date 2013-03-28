@@ -27,8 +27,10 @@ module Reposlanger
     end
 
     def pull(repo)
+      # TODO: to update an existing repo, need to checkout each branch and
+      # pull individually
       before_pull(repo)
-      repo.cmd "git clone -o #{name} #{clone_url(repo)} ."
+      repo.cmd "git clone -n -o #{name} #{clone_url(repo)} ."
       repo.commander.remote_branches(name).each do |branch|
         repo.cmd "git branch --track #{branch} #{name}/#{branch}"
       end

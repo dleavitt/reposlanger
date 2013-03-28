@@ -75,6 +75,7 @@ class RS < Thor
   desc "console", "run a console in this context"
   def console
     env
+    binding.pry
   end
 
   no_tasks do

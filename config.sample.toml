@@ -1,0 +1,27 @@
+[beanstalk-example]
+provider = "beanstalk"
+domain = ""
+login = ""
+password = ""
+
+[gitlabhq-example]
+provider = "gitlabhq"
+endpoint = ""
+private_token = ""
+
+[bitbucket-example]
+provider = "bitbucket"
+user = ""
+login = ""
+password = ""
+
+[github-user-example]
+provider = "github"
+login = ""
+password = ""
+
+[github-org-example]
+provider = "github"
+login = ""
+password = ""
+org = ""
