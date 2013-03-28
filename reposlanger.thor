@@ -84,6 +84,7 @@ class RS < Thor
       require "reposlanger/providers/gitlabhq"
       require "reposlanger/providers/bitbucket"
       require "reposlanger/providers/github"
+      require "reposlanger/providers/beanstalk"
     end
 
     def new_provider(remote_name)

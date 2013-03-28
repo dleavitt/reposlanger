@@ -5,6 +5,7 @@ gem "thor"
 gem "toml"
 gem "hashie"
 gem "rspec"
+gem "httparty"
 
 # APIs
 

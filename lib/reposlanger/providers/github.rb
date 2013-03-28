@@ -27,7 +27,7 @@ module Reposlanger
         :has_issues   => :issues,
         :description  => :description,
         :private      => :private,
-        :website     => :homepage,
+        :website      => :homepage,
       }
 
       def create_remote(repo)
@@ -46,7 +46,7 @@ module Reposlanger
 
       def retrieve_metadata(repo)
         proj = api.get(repo.name)
-        
+
         METADATA_MAP.each_with_object({}) do |(key, value), h|
           h[value.to_s] = proj[key]
         end

@@ -71,6 +71,7 @@ DEPENDENCIES
   github_api
   gitlab
   hashie
+  httparty
   pry
   rspec
   thor
