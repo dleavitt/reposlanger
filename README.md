@@ -29,6 +29,10 @@ thor -T # list commands
 thor help COMMAND # usage for an individual command
 ```
 
+### Notes
+
+- you may need to hit the git providers via ssh to get them added to your known hosts
+
 ## TODO (so much):
 
 ### Features
@@ -40,13 +44,15 @@ thor help COMMAND # usage for an individual command
   - provide intelligible output when running concurrent threads
 - tests
 - make it a standalone executable that creates a working directory for you
-- add beanstalk (svn and git)
-- some way to make it so you can rename the repo when transferring
+  - where is the right place for working dir on unix?
+- add providers for
+  - beanstalk svn
+  - generic git (pull only)
+  - generic svn (pull only)
 - autoloader (or at least do loading right)
 - allow the name to be different on the target vs. the source
 - manually override metadata
-- decouple API clients from providers
-- figure out my damn terminology (provider, service, repo)
+- figure out terminology (provider, service, repo)
 - refactor. be always refactoring.
 
 ### Bugs

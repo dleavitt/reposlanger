@@ -7,6 +7,9 @@ module Reposlanger
         attr_accessor :domain, :username, :password, :repo
 
         format :json
+        headers 'Content-Type'  => 'application/json',
+                'User-Agent'    => 'Reposlanger'
+
 
         def initialize(options)
           @domain   = options[:domain]
@@ -19,19 +22,14 @@ module Reposlanger
         end
 
         def get(name)
-          @repo ||= do_request(:get, "/repositories.json")
+          do_request(:get, "/repositories.json")
             .find { |r| r["repository"]["name"] ==  name}["repository"] \
             or raise "No repo '#{name}' found"
         end
 
-        def get!(name)
-          @repo = nil
-          get(name)
-        end
-
         def create(name, body = {})
           body = { name: name, title: name, type_id: "git" }.merge(body)
-          do_request :post, "/repositories.json", body: body
+          do_request :post, "/repositories.json", body: { repository: body }.to_json
         end
 
         def base_url
