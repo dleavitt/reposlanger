@@ -10,13 +10,13 @@ module Reposlanger
         API.new(options)
       end
 
-      def repos(options = {})
-        api.list(options)
+      def repos
+        api.list
       end
 
       # TODO: might have to break this into pull and push urls
       def clone_url(repo)
-        api.get(repo.name).ssh_url
+        api.get(repo.name)['ssh_url']
       end
 
       # additional utility methods
@@ -40,7 +40,6 @@ module Reposlanger
         else
           {}
         end
-
         api.create(repo.name, params) unless remote_exists?(repo)
       end
 
@@ -48,18 +47,13 @@ module Reposlanger
         proj = api.get(repo.name)
 
         METADATA_MAP.each_with_object({}) do |(key, value), h|
-          h[value.to_s] = proj[key]
+          h[value.to_s] = proj[key.to_s]
         end
       end
 
       def remote_exists?(repo)
-        begin
-          api.get(repo.name) && true
-        rescue ::Github::Error::NotFound
-          false
-        end
+        api.get(repo.name)["name"] && true
       end
     end
-
   end
 end

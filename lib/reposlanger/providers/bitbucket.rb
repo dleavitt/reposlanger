@@ -1,4 +1,5 @@
 require 'reposlanger'
+require 'reposlanger/providers/bitbucket/api'
 
 module Reposlanger
   module Providers
@@ -6,15 +7,15 @@ module Reposlanger
       include Reposlanger::Provider
 
       def self.api(options = {})
-        BitBucket.new(options)
+        API.new(options)
       end
 
       def repos(options = {})
-        api.repos.all.map(&:name)
+        api.list
       end
 
       def clone_url(repo)
-        "git@bitbucket.org:#{api.user}/#{repo.name}.git"
+        "git@bitbucket.org:#{api.username}/#{repo.name}.git"
       end
 
       # additional utility methods
@@ -42,12 +43,11 @@ module Reposlanger
           {}
         end
 
-        params[:name] = repo.name
-        api.repos.create(params) unless remote_exists?(repo)
+        api.create(repo.name, params) unless remote_exists?(repo)
       end
 
       def retrieve_metadata(repo)
-        proj = api.repos.get(api.user, repo.name.downcase)
+        proj = api.get(repo.name)
 
         METADATA_MAP.each_with_object({}) do |(key, value), h|
           h[value.to_s] = proj[key]
@@ -57,8 +57,8 @@ module Reposlanger
       def remote_exists?(repo)
         begin
           # could memoize this, but would need to be careful to expire
-          api.repos.get(api.user, repo.name.downcase) && true
-        rescue BitBucket::Error::NotFound
+          api.get(repo.name)["name"] && true
+        rescue MultiJson::LoadError
           false
         end
       end

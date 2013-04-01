@@ -1,4 +1,5 @@
 require 'reposlanger'
+require 'reposlanger/providers/gitlabhq/api'
 
 module Reposlanger
   module Providers
@@ -6,15 +7,15 @@ module Reposlanger
       include Reposlanger::Provider
 
       def self.api(options = {})
-        Gitlab.client(options)
+        API.new(options)
       end
 
       def repos(options = {})
-        api.projects(options.merge({per_page: 500})).map(&:name)
+        api.list
       end
 
       def clone_url(repo)
-        "git@#{URI.parse(api.endpoint).host}:#{repo.name}.git"
+        "git@#{api.host}:#{repo.name}.git"
       end
 
       # additional utility methods
@@ -36,22 +37,22 @@ module Reposlanger
         else
           {}
         end
-
-        api.create_project(repo.name, params) unless remote_exists?(repo)
+        api.create(repo.name, params) unless remote_exists?(repo)
       end
 
       def retrieve_metadata(repo)
-        proj = api.project(repo.name)
+        proj = api.get(repo.name)
 
         METADATA_MAP.each_with_object({}) do |(key, value), h|
-          h[value.to_s] = proj.send(key)
+          h[value.to_s] = proj[key.to_s]
         end
       end
 
       def remote_exists?(repo)
         begin
-          api.project(repo.name) && true
-        rescue Gitlab::Error::NotFound
+          # could memoize this, but would need to be careful to expire
+          api.get(repo.name)["name"] && true
+        rescue MultiJson::LoadError
           false
         end
       end

@@ -4,10 +4,9 @@ module Reposlanger
       class API
         include HTTParty
 
-        format :json
-
         attr_accessor :domain, :username, :password, :repo
-        # debug_output $stdout
+
+        format :json
 
         def initialize(options)
           @domain   = options[:domain]
@@ -21,7 +20,8 @@ module Reposlanger
 
         def get(name)
           @repo ||= do_request(:get, "/repositories.json")
-            .find { |r| r["repository"]["name"] ==  name}["repository"] or raise "No repo '#{name}' found"
+            .find { |r| r["repository"]["name"] ==  name}["repository"] \
+            or raise "No repo '#{name}' found"
         end
 
         def get!(name)
@@ -29,9 +29,9 @@ module Reposlanger
           get(name)
         end
 
-        def create(name, options = {})
-          options = { name: name, title: name, type_id: "git" }.merge(options)
-          do_request :post, "/repositories.json", options
+        def create(name, body = {})
+          body = { name: name, title: name, type_id: "git" }.merge(body)
+          do_request :post, "/repositories.json", body: body
         end
 
         def base_url
@@ -39,9 +39,8 @@ module Reposlanger
         end
 
         def do_request(verb, url, options = {}, &block)
-          options = {
-            basic_auth: { username: username, password: password }
-          }.merge(options)
+          options = { basic_auth: { username: username,
+                                    password: password } }.merge(options)
 
           self.class.send verb, "#{base_url}#{url}", options, &block
         end

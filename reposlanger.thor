@@ -20,6 +20,14 @@ class RS < Thor
     repo.mirror
   end
 
+  desc "clone SOURCE REPO_NAME", "clones a repo locally"
+  def clone(source_remote_name, repo_name)
+    env
+    repo = Reposlanger::Repo.new repo_name,
+                                 :source => new_provider(source_remote_name)
+    repo.clone
+  end
+
   # TODO: update to new style
   desc "mirror_batch SOURCE TARGET", "copy all repos from one provider to another"
   method_option :concurrency, default: 1,   aliases: "-c", type: :numeric

@@ -11,17 +11,16 @@ private_token = ""
 
 [bitbucket-example]
 provider = "bitbucket"
-user = ""
-login = ""
+username = ""
 password = ""
 
 [github-user-example]
 provider = "github"
-login = ""
+username = ""
 password = ""
 
 [github-org-example]
 provider = "github"
-login = ""
+username = ""
 password = ""
 org = ""
