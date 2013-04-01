@@ -16,6 +16,15 @@ module Reposlanger
       def api(options = {})
         nil
       end
+
+      # getter / setter
+      def metadata_map(map = nil)
+        if map
+          @metadata_map = map
+        else
+          @metadata_map
+        end
+      end
     end
 
     attr_accessor :name, :options
@@ -65,6 +74,35 @@ module Reposlanger
 
     def api
       @api ||= self.class.api(options)
+    end
+
+    def metadata_map
+      self.class.metadata_map
+    end
+
+    def repos
+      api.list
+    end
+
+    def create_remote(repo)
+      params = if repo.metadata
+        metadata_map.each_with_object({}) do |(key, value), h|
+          if val = repo.metadata[value.to_s]
+            h[key.to_sym] = val
+          end
+        end
+      else
+        {}
+      end
+      api.create(repo.name, params) unless remote_exists?(repo)
+    end
+
+    def retrieve_metadata(repo)
+      proj = api.get(repo.name)
+
+      metadata_map.each_with_object({}) do |(key, value), h|
+        h[value.to_s] = proj[key.to_s]
+      end
     end
 
     # Methods to override
