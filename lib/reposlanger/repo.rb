@@ -39,8 +39,8 @@ module Reposlanger
       cmd "rm -rf #{path}" if block_given? ? yield(path) : true
     end
 
-    def cmd(command)
-      commander.run(command)
+    def cmd(command, key = :git)
+      commander.run(command, key)
     end
   end
 end

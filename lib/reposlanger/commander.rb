@@ -12,6 +12,7 @@ module Reposlanger
       @dirs = {
         :base       => base_path,
         :git        => File.join(base_path, "git", repo_name),
+        :scratch    => File.join(base_path, "scratch", repo_name),
       }
     end
 
@@ -19,6 +20,7 @@ module Reposlanger
     # name should be a symbol, value a subdir within "scratch"
     def register_dir(key, path)
       @dirs[key] = File.join @dirs[:scratch], path
+      FileUtils.mkdir_p(@dirs[key])
     end
 
     # TODO: both "puts" line and backticks should respect logging settings

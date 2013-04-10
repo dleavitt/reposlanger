@@ -24,8 +24,8 @@ class RS < Thor
   def clone(source_remote_name, repo_name)
     env
     repo = Reposlanger::Repo.new repo_name,
-                                 :source => new_provider(source_remote_name)
-    repo.clone
+                              :source => new_provider(source_remote_name)
+    repo.pull
   end
 
   # TODO: update to new style
