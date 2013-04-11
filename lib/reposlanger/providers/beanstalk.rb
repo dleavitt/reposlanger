@@ -27,12 +27,13 @@ module Reposlanger
           repo.commander.register_dir(:svn, "svn")
           repo.commander.create_dir(:svn)
           svn_dir = repo.commander.path_for(:svn)
+          svn_creds = "--source-username #{api.username} --source-password #{api.password}"
           local_uri = "file://#{svn_dir}"
           repo.cmd "svnadmin create #{svn_dir}", :svn
           repo.cmd "echo '#!/bin/sh\n\nexit 0' > #{svn_dir}/hooks/pre-revprop-change", :svn
           repo.cmd "chmod +x #{svn_dir}/hooks/pre-revprop-change", :svn
-          repo.cmd "svnsync init #{local_uri} #{clone_url(repo)}", :svn
-          repo.cmd "svnsync sync #{local_uri}", :svn
+          repo.cmd "svnsync init #{local_uri} #{clone_url(repo)} #{svn_creds}", :svn
+          repo.cmd "svnsync sync #{local_uri} #{svn_creds}", :svn
 
           svn_list = repo.cmd("svn list #{local_uri}", :svn).split("\n")
 
