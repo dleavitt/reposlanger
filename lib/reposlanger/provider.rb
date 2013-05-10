@@ -60,10 +60,7 @@ module Reposlanger
 
     def before_push(repo); end
     def after_push(repo); end
-
-    def retrieve_metadata(repo); end
-    def create_remote(repo); end
-
+    
     def repos
       raise "not implemented"
     end
