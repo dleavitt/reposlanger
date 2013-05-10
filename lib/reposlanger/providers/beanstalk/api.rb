@@ -10,7 +10,6 @@ module Reposlanger
         headers 'Content-Type'  => 'application/json',
                 'User-Agent'    => 'Reposlanger'
 
-
         def initialize(options)
           @domain   = options[:domain]
           @username = options[:username]

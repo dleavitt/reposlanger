@@ -35,7 +35,8 @@ module Reposlanger
 
         def do_request(verb, url, options = {}, &block)
           options = {
-            basic_auth: { username: username, password: password }
+            basic_auth: { username: username, password: password },
+            headers: { "User-Agent" => "Reposlanger" },
           }.merge(options)
 
           self.class.send verb, url, options, &block

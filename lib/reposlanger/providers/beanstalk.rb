@@ -28,19 +28,20 @@ module Reposlanger
           repo.commander.create_dir(:svn)
           svn_dir = repo.commander.path_for(:svn)
           svn_creds = "--source-username #{api.username} --source-password #{api.password}"
+
+          # git-svn doesn't seem to work with http auth, so check it out locally
           local_uri = "file://#{svn_dir}"
           repo.cmd "svnadmin create #{svn_dir}", :svn
           repo.cmd "echo '#!/bin/sh\n\nexit 0' > #{svn_dir}/hooks/pre-revprop-change", :svn
           repo.cmd "chmod +x #{svn_dir}/hooks/pre-revprop-change", :svn
           repo.cmd "svnsync init #{local_uri} #{clone_url(repo)} #{svn_creds}", :svn
           repo.cmd "svnsync sync #{local_uri} #{svn_creds}", :svn
-
           svn_list = repo.cmd("svn list #{local_uri}", :svn).split("\n")
 
           git2svn_flags = if svn_list.include?("trunk/")
             flags = ["--trunk trunk"]
             flags << (svn_list.include?("branches") ? "--branches branches"
-                                                   : "--nobranches")
+                                                    : "--nobranches")
             flags << (svn_list.include?("tags") ? "--tags tags" : "--notags")
             flags.join(" ")
           else

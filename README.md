@@ -46,14 +46,12 @@ thor help COMMAND # usage for an individual command
 - make it a standalone executable that creates a working directory for you
   - where is the right place for working dir on unix?
 - add providers for
-  - beanstalk svn
   - generic git (pull only)
   - generic svn (pull only)
 - autoloader (or at least do loading right)
 - allow the name to be different on the target vs. the source
 - manually override metadata
 - figure out terminology (provider, service, repo)
-- refactor. be always refactoring.
 
 ### Bugs
 
